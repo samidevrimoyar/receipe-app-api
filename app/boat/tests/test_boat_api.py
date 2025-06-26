@@ -77,7 +77,7 @@ class PrivateBoatAPITests(TestCase):
 
         res = self.client.get(BOATS_URL)
 
-        boats = Boat.objects.filter(self.user)
+        boats = Boat.objects.filter(user=self.user)
         serializer = BoatSerializer(boats, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
