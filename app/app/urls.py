@@ -19,7 +19,7 @@ from drf_spectacular.views import (
 )
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +28,11 @@ urlpatterns = [
         'api/docs/',
         SpectacularSwaggerView.as_view(url_name='api-schema'),
         name='api-docs',
-    )
+    ),
+    path('api/user/', include('user.urls')),
+    path('api/recipe/', include('recipe.urls')),
+    ############################################
+    # dlb uyarlaması
+    path('api/boat/', include('boat.urls')),
+    ############################################
 ]

@@ -45,3 +45,10 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Recipe)
+#######################################
+# BU BÖLÜM dlb İÇİN YAPILAN TANIMLAMA #
+admin.site.register(models.Boat)
+
+# ...
+#######################################
