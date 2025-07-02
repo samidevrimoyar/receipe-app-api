@@ -19,3 +19,14 @@ class BoatViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve boats for authenticated users."""
         return self.queryset.filter(user=self.request.user).order_by('-id')
+
+    def get_serializer_class(self):
+        """Return the serializer class for request."""
+        if self.action == 'list':
+            return serializers.BoatSerializer
+
+        return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new boat."""
+        serializer.save(user=self.request.user)
