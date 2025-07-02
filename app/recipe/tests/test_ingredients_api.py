@@ -1,5 +1,5 @@
 """
-Test for the ingredients API.
+Tests for the ingredients API.
 """
 from decimal import Decimal
 
@@ -44,7 +44,7 @@ class PublicIngredientsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateIngrediensApiTests(TestCase):
+class PrivateIngredientsApiTests(TestCase):
     """Test unauthenticated API requests."""
 
     def setUp(self):
@@ -79,7 +79,7 @@ class PrivateIngrediensApiTests(TestCase):
 
     def test_update_ingredient(self):
         """Test updating an ingredient."""
-        ingredient = Ingredient.objects.create(user=self.user, name='Cliantro')
+        ingredient = Ingredient.objects.create(user=self.user, name='Cilantro')
 
         payload = {'name': 'Coriander'}
         url = detail_url(ingredient.id)
@@ -101,7 +101,7 @@ class PrivateIngrediensApiTests(TestCase):
         self.assertFalse(ingredients.exists())
 
     def test_filter_ingredients_assigned_to_recipes(self):
-        """Test listing ingredients by those assigned to recipes."""
+        """Test listing ingredients to those assigned to recipes."""
         in1 = Ingredient.objects.create(user=self.user, name='Apples')
         in2 = Ingredient.objects.create(user=self.user, name='Turkey')
         recipe = Recipe.objects.create(
