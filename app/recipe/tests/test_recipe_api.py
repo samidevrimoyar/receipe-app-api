@@ -59,7 +59,6 @@ def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
 
-
 class PublicRecipeAPITests(TestCase):
     """Test unauthenticated API requests."""
 
@@ -390,7 +389,7 @@ class PrivateRecipeApiTests(TestCase):
         r2.tags.add(tag2)
         r3 = create_recipe(user=self.user, title='Fish and chips')
 
-        params = {'tags': f'{tag1.id}, {tag2.id}'}
+        params = {'tags': f'{tag1.id},{tag2.id}'}
         res = self.client.get(RECIPES_URL, params)
 
         s1 = RecipeSerializer(r1)
@@ -410,7 +409,7 @@ class PrivateRecipeApiTests(TestCase):
         r2.ingredients.add(in2)
         r3 = create_recipe(user=self.user, title='Red Lentil Daal')
 
-        params = {'ingredients': f'{in1.id}, {in2.id}'}
+        params = {'ingredients': f'{in1.id},{in2.id}'}
         res = self.client.get(RECIPES_URL, params)
 
         s1 = RecipeSerializer(r1)
