@@ -84,18 +84,6 @@ services:
     networks:
       - webnet
 
-  proxy:
-    build:
-      context: ./proxy
-    restart: always
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - static-data:/vol/static
-
 volumes:
   traefik_certs:
   postgres-data:
