@@ -56,6 +56,8 @@ services:
       - DB_PASS=${DB_PASS}
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+    networks:
+      - webnet
     depends_on:
       - db
     labels:
@@ -79,6 +81,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+    networks:
+      - webnet
 
   proxy:
     build:
@@ -96,3 +100,7 @@ volumes:
   traefik_certs:
   postgres-data:
   static-data:
+
+networks:
+  webnet:
+    driver: bridge
