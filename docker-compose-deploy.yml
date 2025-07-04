@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.9"
 
 services:
   #####################
@@ -34,42 +34,35 @@ services:
     labels:
       # HTTP -> HTTPS yönlendirmesi için genel bir kural
       - "traefik.enable=true"
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.rule=hostregexp('{host:.+}')"
       - "traefik.http.routers.http-catchall.entrypoints=web"
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       # (Opsiyonel) Traefik Dashboard'u güvenli hale getir
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.superisi.net`)" # Dashboard için bir subdomain belirleyin
+      - "traefik.http.routers.dashboard.rule=Host('traefik.superisi.net')" # Dashboard için bir subdomain belirleyin
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
-
-  #####################
-  # APP - DJANGO UYGULAMASI
-  #####################
   app:
     build:
       context: .
-    container_name: recipe_app_api
+    restart: always
     volumes:
-      - ./app:/app
-      - dev-static-data:/vol/web # Statik ve medya dosyaları için
-    env_file:
-      - .env
-    command: >
-      sh -c "python manage.py wait_for_db &&
-             python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn app.wsgi:application --bind 0.0.0.0:9000"
-    networks:
-      - webnet
+      - static-data:/vol/web
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     depends_on:
-      - db # Eğer db servisiniz de bu dosyadaysa
+      - db
     labels:
       # Bu servisi Traefik'e tanıt
       - "traefik.enable=true"
       # Bu servise hangi domain ile erişileceğini belirt
-      - "traefik.http.routers.recipe-app.rule=Host(`superisi.net`)" # KENDİ ALAN ADINIZI GİRİN
+      - "traefik.http.routers.recipe-app.rule=Host('superisi.net')" # KENDİ ALAN ADINIZI GİRİN
       # Sadece HTTPS (websecure) giriş noktasını kullanmasını sağla
       - "traefik.http.routers.recipe-app.entrypoints=websecure"
       # SSL sertifikası için hangi çözücüyü kullanacağını belirt
@@ -86,14 +79,20 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
-    networks:
-      - webnet
+
+  proxy:
+    build:
+      context: ./proxy
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static-data:/vol/static
 
 volumes:
   traefik_certs:
   postgres-data:
-  dev-static-data:
-
-networks:
-  webnet:
-    driver: bridge
+  static-data:
