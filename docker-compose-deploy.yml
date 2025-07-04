@@ -69,7 +69,7 @@ services:
       # Bu servisi Traefik'e tanıt
       - "traefik.enable=true"
       # Bu servise hangi domain ile erişileceğini belirt
-      - "traefik.http.routers.recipe-app.rule=Host(`api.superisi.net`)" # KENDİ ALAN ADINIZI GİRİN
+      - "traefik.http.routers.recipe-app.rule=Host(`superisi.net`)" # KENDİ ALAN ADINIZI GİRİN
       # Sadece HTTPS (websecure) giriş noktasını kullanmasını sağla
       - "traefik.http.routers.recipe-app.entrypoints=websecure"
       # SSL sertifikası için hangi çözücüyü kullanacağını belirt
