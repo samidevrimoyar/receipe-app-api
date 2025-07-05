@@ -1,22 +1,6 @@
 version: "3.9"
 
 services:
-  traefik:
-    image: traefik:v2.10
-    container_name: traefik
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik:/etc/traefik
-      - ./letsencrypt:/letsencrypt
-    labels:
-      - "traefik.enable=true"
-      # Dashboard için (opsiyonel)
-      - "traefik.http.routers.traefik.rule=Host(`traefik.superisi.net`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
   app:
     build:
       context: .
@@ -32,14 +16,7 @@ services:
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     depends_on:
       - db
-    expose:
-      - 8000  # Uygulamanın dinlediği port
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`superisi.net`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=8000"
+
   db:
     image: postgres:13-alpine
     restart: always
@@ -49,7 +26,18 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+
+  proxy:
+    build:
+      context: ./proxy
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - 80:8000
+    volumes:
+      - static-data:/vol/static
+
 volumes:
   postgres-data:
   static-data:
-  letsencrypt:
