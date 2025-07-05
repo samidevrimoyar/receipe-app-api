@@ -1,0 +1,28 @@
+api:
+  dashboard: true
+  insecure: true  # Sadece güvenli ağlarda kullanın
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: sami.devrim@gmail.com  # Let's Encrypt bildirimleri için
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
